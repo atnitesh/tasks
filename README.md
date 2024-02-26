@@ -29,12 +29,14 @@ The directory structure follows a modular approach, separating different functio
 API versioning is there to enable different versions of API (`api/v1`).
 
 - Endpoints:
-  Endpoints are organized in separate folders under the components folder for different functionalities (e.g., login, signup, create post, get user feed).
+  Endpoints are organized in separate folders under the `components` folder for different functionalities (e.g., login, signup, create post, get user feed).
 
-  - /api/v1/login and /api/v1/signup: Handle user authentication and registration and stores hash password of user using bcrypt library for security
-  - /api/v1/posts/create: Creates a new post.
-  - /api/v1/posts/feed: Retrieves a user's feed based on his/her followers, taking into account visibility and recent posts.
-  - /api/v1/users/:id/follow: Allow users to follow some other user
+  - `/api/v1/login` and `/api/v1/signup`: Handle user authentication and registration and stores hash password of user using `bcrypt` library for security. Generates JWT token and authenticates user identity through it for various protected routes.
+  - `/api/v1/posts/create`: Creates a new post. The visibility can vary from private to public.
+  - `/api/v1/posts/feed`: Retrieves a user's feed based on his/her followers, taking into account visibility and recent posts. Only non-private posts can be seen on user's feed.
+  - `/api/v1/users/:id/follow`: Allow users to follow some other user
+ 
+  In order to perform the last 3 endpoints, user should be authenticated first. This is done by adding a `authRequiredHook` as a pre handler in `v1.ts`.
 
 - Database Schema:
   The database schema includes tables for users, device_tokens, follows, and posts, along with necessary constraints and foreign keys.
@@ -59,20 +61,20 @@ API versioning is there to enable different versions of API (`api/v1`).
 3. **Response structure:**
    Pre-defined response structures with proper status codes enables to send response adhering to a specific format when sending back response. This makes the response more structured, consistent and readable without having the need to define status code, name and message everytime.
 
-4. **Caching**
+4. **Caching:**
    Make use of caching mechanism for the endpoints which are frequently accessed to provide data by querying over database
 
-5. **Middleware Usage**
+5. **Middleware Usage:**
   Explore the use of middleware for common functionalities (e.g., authentication middleware, validation middleware) to keep the endpoint handlers clean and focused.
 
-6. **Rate Limiting**
+6. **Rate Limiting:**
   We can implement rate limiting to prevent abuse or brute-force attacks on authentication endpoints.
 
 7. **Configuration:**
    Consider to environment variables for sensitive data like JWT secrets by storing them in a separate .env file.
 
-8. **Testing**
-  We need to implement unit tests for critical functionalities to ensure code correctness and facilitate future changes.
+8. **Testing:**
+  We need to implement unit tests and integration for critical functionalities to ensure code correctness and facilitate future changes. This can be done using `jest` framework.
 
 ### Optimize /api/v1/posts/feed
 
@@ -87,7 +89,7 @@ In this way updated user feed will always be shown to the user while improving t
 **Pagination**
 
 - Another optimization to improve response time is to implement pagination to limit the number of records fetched in a single request. Since we can expect a large number of posts in a user feed, pagination will help to load the user feed faster by reducing the amt of data in a single request.
-- As per the implementation, the database query was modified to evaluate the followingIds and then return a fixed no of posts based on page size from the total posts (irrespective of the following users). 
+- As per the implementation, the database query was modified to evaluate the `followingIds` and then return a fixed no of posts based on page size from the total posts (irrespective of the following users). 
 If pagination was added to the previous query it would result to give all posts corresponding to x(whatever the page size is) number of following users. And the posts count will vary for each page, hence not being consistent.
 - In the modified query version, the page parameter is added to the querystring, and the skip and take options are used in the Prisma query to implement pagination. Default page size is 10.
 Now, clients can make requests like `/api/v1/posts/feed?page=1` to get the first page with 10 posts, `/api/v1/posts/feed?page=2` for the second page, and so on.
@@ -103,4 +105,5 @@ Implementation
   Ensures a user cannot follow themselves. If the follower ID is the same as the following ID, it returns a bad request response.
 - Existing Follow Check:
   Queries the database to check if there is an existing follow relationship between the current user (follower) and the target user (following).
-- If there's no existing follow relationship, it creates a new follow relationship 
+- If there's no existing follow relationship, it creates a new follow relationship
+- The database call is wrapped in a try/catch block to handle exceptions occuring from databases 
