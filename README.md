@@ -59,8 +59,20 @@ API versioning is there to enable different versions of API (`api/v1`).
 3. **Response structure:**
    Pre-defined response structures with proper status codes enables to send response adhering to a specific format when sending back response. This makes the response more structured, consistent and readable without having the need to define status code, name and message everytime.
 
-4. **Configuration:**
+4. **Caching**
+   Make use of caching mechanism for the endpoints which are frequently accessed to provide data by querying over database
+
+5. **Middleware Usage**
+  Explore the use of middleware for common functionalities (e.g., authentication middleware, validation middleware) to keep the endpoint handlers clean and focused.
+
+6. **Rate Limiting**
+  We can implement rate limiting to prevent abuse or brute-force attacks on authentication endpoints.
+
+7. **Configuration:**
    Consider to environment variables for sensitive data like JWT secrets by storing them in a separate .env file.
+
+8. **Testing**
+  We need to implement unit tests for critical functionalities to ensure code correctness and facilitate future changes.
 
 ### Optimize /api/v1/posts/feed
 
