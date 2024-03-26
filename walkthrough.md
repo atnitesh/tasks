@@ -1,7 +1,4 @@
-Codebase Walkthrough: tasks-main/workspaces/backend-node
-
-This codebase appears to be the backend for a social media application built with Node.js and Prisma. The structure and functionality is as follows
-
+Codebase Walkthrough: 
 Structure:
 
 `scripts`: Contains scripts for generating data and tokens.
